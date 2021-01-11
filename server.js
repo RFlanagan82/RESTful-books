@@ -19,7 +19,7 @@ mongoose.connect(
 );
 
 // set up connection to constructed Database
-const db = require("./models");
+const BookController = require("./controllers/bookController");
 
 //Check to see if Mongoose connection is running
 const connection = mongoose.connection;
@@ -41,39 +41,8 @@ app.get("/api/config", (req, res) => {
   });
 });
 
-// ====================================================================================
-//Setup our routes for Resource Driven API
-
-app.get("/api/book", (req, res) => {
-  db.Book.find({}).then((foundBooks) => {
-    res.json(foundBooks);
-  });
-});
-
-app.get("/api/book/:id", (req, res) => {
-  db.Book.find({ _id: req.params.id }).then((foundBook) => {
-    res.json(foundBook);
-  });
-});
-
-app.post("/api/book", (req, res) => {
-  db.Book.create(req.body).then((newBook) => {
-    res.json(newBook);
-  });
-});
-
-app.put("/api/book/:id", (req, res) => {
-  db.Book.findByIdAndUpdate(req.params.id, req.body, {new: true}).then((updatedBook) => {
-    res.json(updatedBook);
-  });
-});
-
-app.delete("/api/book/:id", (req, res) => {
-    db.Book.findByIdAndDelete(req.params.id).then((result) => {
-        res.json(result);
-    })
-});
-// ===================================================================================
+//Call the bookController for the app
+app.use("/api/book", BookController);
 
 // Run App on the Port in the browser
 app.listen(PORT, () => {
