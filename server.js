@@ -20,6 +20,7 @@ mongoose.connect(
 
 // set up connection to constructed Database
 const BookController = require("./controllers/bookController");
+const AuthorController = require("./controllers/authorController");
 
 //Check to see if Mongoose connection is running
 const connection = mongoose.connection;
@@ -41,8 +42,9 @@ app.get("/api/config", (req, res) => {
   });
 });
 
-//Call the bookController for the app
+//Call the Route Controllers for the app to work
 app.use("/api/book", BookController);
+app.use("/api/author", AuthorController),
 
 // Run App on the Port in the browser
 app.listen(PORT, () => {
