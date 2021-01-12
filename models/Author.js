@@ -20,21 +20,19 @@ const AuthorSchema = new Schema(
       },
     ],
   },
-  {
-    // include any virtual properties when data is requested to hold temporary attributes 
-    // must state that virtuals are allowed and processed thru JSON.
-   toJSON: { virtuals: true }
-  }
+  { toJSON: { virtuals: true } }
 );
 
-// now set up full name of author that won't be stored in the db
+// userSchema.virtual("domain").get(function () {
+//   return this.email.slice(this.email.indexOf("@") + 1);
+// });
 AuthorSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
-AuthorSchema.virtual("numBooks").get(function () {
-  return this.books.length;
-});
+// AuthorSchema.virtual("numBooks").get(function(){
+//     return this.books.length;
+// })
 
 const Author = mongoose.model("Author", AuthorSchema);
 

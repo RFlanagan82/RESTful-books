@@ -2,13 +2,12 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models");
 
-// ====================================================================================
-//Setup our routes for Resource Driven API
-
 router.get("/", (req, res) => {
-  db.Author.find({}).then((foundAuthors) => {
-    res.json(foundAuthors);
-  });
+  db.Author.find({})
+    .populate("books")
+    .then((foundAuthors) => {
+      res.json(foundAuthors);
+    });
 });
 
 router.get("/:id", (req, res) => {
@@ -36,6 +35,5 @@ router.delete("/:id", (req, res) => {
     res.json(result);
   });
 });
-// ===================================================================================
 
 module.exports = router;

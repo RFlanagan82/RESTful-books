@@ -1,4 +1,4 @@
-const express = require ("express");
+const express = require("express");
 const router = express.Router();
 const db = require("../models");
 
@@ -6,9 +6,19 @@ const db = require("../models");
 //Setup our routes for Resource Driven API
 
 router.get("/", (req, res) => {
-  db.Book.find({}).then((foundBooks) => {
-    res.json(foundBooks);
-  });
+  db.Book.find({})
+    .populate("author", "firstName lastName")
+    .then((foundBooks) => {
+      res.json(foundBooks);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: true,
+        data: null,
+        message: "Failed to retrieve all books.",
+      });
+    });
 });
 
 router.get("/:id", (req, res) => {
@@ -24,16 +34,17 @@ router.post("/", (req, res) => {
 });
 
 router.put("/:id", (req, res) => {
-  db.Book.findByIdAndUpdate(req.params.id, req.body, {new: true}).then((updatedBook) => {
-    res.json(updatedBook);
-  });
+  db.Book.findByIdAndUpdate(req.params.id, req.body, { new: true }).then(
+    (updatedBook) => {
+      res.json(updatedBook);
+    }
+  );
 });
 
 router.delete("/:id", (req, res) => {
-    db.Book.findByIdAndDelete(req.params.id).then((result) => {
-        res.json(result);
-    })
+  db.Book.findByIdAndDelete(req.params.id).then((result) => {
+    res.json(result);
+  });
 });
-// ===================================================================================
 
 module.exports = router;
