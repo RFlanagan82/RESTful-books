@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const db = require("../models");
 
 //***Only 2 routes we care about here [ When the sign up or login]
 
-/// Sign Up ROUTE
+/// Sign Up ROUTE - Enables our user to tell us who they are
 
 //First check to see if the db holds a user's email and pw
 router.post("/api/signup", (req, res) => {
   const { emailAddress, password } = req.body;
+  // if thereis no email address or password on file then it is a bad request - set status to 400
   if (!emailAddress.trim() || !password.trim()) {
     res.status(400);
   } else {
@@ -22,7 +25,22 @@ router.post("/api/signup", (req, res) => {
           password: hashedPassword,
         })
           .then((newUser) => {
-            res.json(newUser);
+            const token = jwt.sign(
+                //this following part in the squiggly brackets is called the payload and is provided when JWT is decoded.
+              {
+                emailAddress: newUser.emailAddress,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+              },
+              // this next line is your SECRET to validate the JWT signature - use a .env file and install dotenv as a dependency. Add to top of server.js
+              process.env.SECRET
+            );
+
+            res.json({
+              error: false,
+              data: token,
+              message: "Successfully signed up.",
+            });
           })
           .catch((err) => {
             res.status(500).json({
@@ -38,19 +56,21 @@ router.post("/api/signup", (req, res) => {
   }
 });
 
-/// LOGIN ROUTE
+/// LOGIN ROUTE - Confirms that the user is who they say they are
 
 // First need to see if the user's email matches one in our database and if so, see if their pw matches.
 router.post("/api/login", (req, res) => {
+  // Step 1: pull user provided email and password from the body.
   const { emailAddress, password } = req.body;
-  //.find pulls in an array - .findOne pulls a single record from an array
+  // Step 2: See if there is a matching user in the database.
+  //[NOTE].find pulls in an array - .findOne pulls a single record object from an array
   db.User.findOne({ emailAddress, emailAddress })
     .then((foundUser) => {
       if (foundUser) {
         console.log(foundUser);
         console.log("Hashed password from DB", foundUser.password);
         console.log("Plain text password from user", password);
-        // Load hash from your password DB.
+        // Step 3: If there is a matching user, compare the plaintext password with the stored hashed pw.
         bcrypt
           .compare(password, foundUser.password)
           .then(function (result) {
@@ -58,15 +78,25 @@ router.post("/api/login", (req, res) => {
             console.log("The passwords match: ", result);
 
             if (result) {
-              //TODO: send a jwt back as data instead.
+              // Step 4: if passwords match, send back success
+              //TODO: Lock down the token with a time frame
+
+              const token = jwt.sign(
+                {
+                  emailAddress: foundUser.emailAddress,
+                  firstName: foundUser.firstName,
+                  lastName: foundUser.lastName,
+                },
+                process.env.SECRET
+              );
 
               res.json({
                 error: false,
-                data: null,
+                data: token,
                 message: "Successfully logged in.",
               });
             } else {
-              // set status to Unauthorized (401) since passwords don't match
+              // Step 5: If the passwords don't match set status to Unauthorized (401) and send back an error
               res.status(401).json({
                 error: true,
                 data: null,
