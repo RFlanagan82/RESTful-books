@@ -1,24 +1,50 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
 const db = require("../models");
 
 // ====================================================================================
 //Setup our routes for Resource Driven API
 
 router.get("/", (req, res) => {
-  db.Book.find({})
-    .populate("author", "firstName lastName")
-    .then((foundBooks) => {
-      res.json(foundBooks);
-    })
-    .catch((err) => {
+  console.log(req.headers);
+  // if there is no valid authorization token - kick user out
+  if (!req.headers.authorization) {
+    return res.status(401).json({
+      error: true,
+      data: null,
+      message: "Unauthorized.",
+    });
+  }
+  // Validate user-provided token.
+  jwt.verify(req.headers.authorization, process.env.SECRET, (err, decoded) => {
+    // if token not validated throw a 401
+    if (err) {
       console.log(err);
-      res.status(500).json({
+      return res.status(401).json({
         error: true,
         data: null,
-        message: "Failed to retrieve all books.",
+        message: "Invalid User",
       });
-    });
+      // If token is valide, decode it.
+    } else {
+      console.log(decoded);
+      // If valid token, find books.
+      db.Book.find({})
+        .populate("author", "firstName lastName")
+        .then((foundBooks) => {
+          res.json(foundBooks);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: true,
+            data: null,
+            message: "Failed to retrieve all books.",
+          });
+        });
+    }
+  });
 });
 
 router.get("/:id", (req, res) => {

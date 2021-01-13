@@ -28,6 +28,7 @@ router.post("/api/signup", (req, res) => {
             const token = jwt.sign(
                 //this following part in the squiggly brackets is called the payload and is provided when JWT is decoded.
               {
+                _id: newUser._id,
                 emailAddress: newUser.emailAddress,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
@@ -83,6 +84,7 @@ router.post("/api/login", (req, res) => {
 
               const token = jwt.sign(
                 {
+                  _id: newUser._id,
                   emailAddress: foundUser.emailAddress,
                   firstName: foundUser.firstName,
                   lastName: foundUser.lastName,
