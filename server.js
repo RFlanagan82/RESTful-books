@@ -2,7 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const PORT = process.env.PORT || 3000;
+const path = require("path");
+
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -46,10 +48,14 @@ app.get("/api/config", (req, res) => {
 });
 
 //Call the Route Controllers for the app to work
-app.use("/api/book", BookController);
-app.use("/api/author", AuthorController);
+app.use("/api/books", BookController);
+app.use("/api/authors", AuthorController);
 app.use("/api/user", UserController);
 app.use(AuthController);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+});
 
 // Run App on the Port in the browser
 app.listen(PORT, () => {
