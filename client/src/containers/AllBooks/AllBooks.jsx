@@ -28,8 +28,7 @@ const AllBooks = () => {
                   <tr key={book._id}>
                     <td>{book.title}</td>
                     <td>{book.pages}</td>
-                    {/* <td>{book.author.fullName}</td> */}
-                    {book.author && book.author.fullName}
+                    <td>{book.author && book.author.fullName}</td>
                   </tr>
                 ))
               ) : (
