@@ -14,7 +14,7 @@ const AllBooks = () => {
     <div className="container">
       <div className="row">
         <div className="col-sm-12">
-          <table className="table">
+          <table className="table table-striped">
             <thead className="table-dark">
               <tr>
                 <th scope="col">Title</th>
