@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  db.Author.find({ _id: req.params.id }).then((foundAuthor) => {
+  db.Author.findOne({ _id: req.params.id }).then((foundAuthor) => {
     res.json(foundAuthor);
   });
 });

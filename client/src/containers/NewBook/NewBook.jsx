@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
   const [pages, setPages] = useState("");
   const [authors, setAuthors] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
     axios
@@ -24,6 +26,8 @@ const NewBook = () => {
       .post("/api/books", { title, pages, author: selectedAuthor })
       .then((response) => {
         console.log(response.data);
+        //Navigate programmatically from dynamically generated code via importing useHistory hook and calling it in the API call.
+        history.push(`/books/${response.data._id}`);
       })
       .catch((err) => {
         console.log(err);
@@ -73,17 +77,21 @@ const NewBook = () => {
                 id="authors"
                 value={selectedAuthor}
                 onChange={(e) => {
-                    setSelectedAuthor(e.target.value);
+                  setSelectedAuthor(e.target.value);
                 }}
               >
-                <option value="">Select an Author...</option>
+                <option>Select an Author...</option>
                 {authors.map((author) => (
-                  <option value={author._id} key={author.id}>
+                  <option value={author._id} key={author._id}>
                     {author.fullName}
                   </option>
                 ))}
               </select>
             </div>
+            <button className="btn btn-link">
+              Don't see your author? Add them here.
+            </button>
+            <br></br>
             <div className="text-center">
               <button type="submit" className="btn btn-primary">
                 Create New Book

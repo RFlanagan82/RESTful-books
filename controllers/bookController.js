@@ -49,7 +49,15 @@ router.get("/:id", (req, res) => {
     .populate("author")
     .then((foundBook) => {
       res.json(foundBook);
-    });
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        error: true,
+        data: null,
+        message: "Failed to create new book."
+      })
+    })
 });
 
 router.post("/", (req, res) => {

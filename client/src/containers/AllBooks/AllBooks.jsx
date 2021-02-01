@@ -36,11 +36,11 @@ const AllBooks = () => {
               {books.length ? (
                 books.map((book) => (
                   <tr key={book._id}>
-                    <td>{book.title}</td>
+                    <td><Link to={`/books/${book._id}`}>{book.title}</Link></td>
                     <td>{book.pages}</td>
                     <td>{book.author && book.author.fullName}</td>
                     <td>
-                      <button className="btn btn-secondary">Edit</button>
+                      <Link to={`/books/${book._id}`} className="btn btn-secondary">Edit</Link>
                     </td>
                     <td>
                       <button className="btn btn-danger">Delete</button>
