@@ -2,6 +2,9 @@
   "name": "RESTful-books",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "12.18.4"
+  },
   "main": "server.js",
   "dependencies": {
     "bcrypt": "^5.0.0",
